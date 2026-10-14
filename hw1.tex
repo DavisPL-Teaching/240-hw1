@@ -19,7 +19,9 @@
     urlcolor={blue!80!black}
 }
 
-\newcommand{\visiblehref}[2]{\href{#1}{#2}\footnote{\url{#1}}}
+\usepackage{booktabs,tabularx}
+
+% \newcommand{\visiblehref}[2]{\href{#1}{#2}\footnote{\url{#1}}}
 
 \begin{document}
 
@@ -29,6 +31,26 @@
 
 \maketitle
 
+\hrule
+
+\bigskip
+
+\noindent
+This problem set contains 5 problems.
+Problems 1, 3, and 5 are coding problems,
+and problems 2 and 4 are pure theory problems.
+Problems 2, 3, and 5 build on Problem 1,
+while Problem 4 are standalone.
+Most problems have multiple parts.
+There is a template in \texttt{src/} which you can modify for the programming problems.
+Solutions to the theory problems should be written in LaTeX.
+
+\bigskip
+
+\hrule
+
+\bigskip
+
 \begin{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,30 +58,282 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \item
+``Brainfuck'' (we shall call it BF) is a toy programming language created by a Swiss computer programmer, Urban Müller, in 1993.
+It's known as one of the simplest ``esoteric'' programming languages, which means it is intended to be excessively simple and/or convoluted to write programs in, but it can be used to express arbitrary computation.
+It is also related to several other esoteric programming languages.
+
+There are eight commands in BF. The following table is reproduced from Wikipedia:\footnote{
+    \url{https://en.wikipedia.org/wiki/Brainfuck}
+}
+
+\begin{table}[ht]
+\centering
+\begin{tabularx}{\linewidth}{@{}cX@{}}
+\toprule
+Character & Semantics \\
+\midrule
+\texttt{>} & Increment the data pointer by one (to point to the next cell to the right). \\
+\texttt{<} & Decrement the data pointer by one (to point to the next cell to the left). Undefined if at 0. \\
+\texttt{+} & Increment the byte at the data pointer by one modulo 256. \\
+\texttt{-} & Decrement the byte at the data pointer by one modulo 256. \\
+\texttt{.} & Output the byte at the data pointer. \\
+\texttt{,} & Accept one byte of input, storing its value in the byte at the data pointer. \\
+\texttt{[} & If the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it \emph{forward} to the command after the \emph{matching} \texttt{]} command. \\
+\texttt{]} & If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it \emph{back} to the command after the \emph{matching} \texttt{[} command. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The syntax of BF can be any sequence of characters, but with one important restriction:
+the left and right brackets (\texttt{[} and \texttt{]}) have to be well-matched. For example:
+$$
+\texttt{[><+-[.]][+]}
+$$
+is a valid BF program, but
+$$
+\texttt{]><+[]}
+$$
+is not.
+
+\begin{enumerate}[(a)]
+\item
+Define the syntax for BF programs using a Rust enum, \texttt{enum BFProg}.
+You will want to have cases for the different syntax elements above, such as \texttt{IncData} for incrementing the data pointer, \texttt{DecData} for decrementing the data pointer, etc.
+
+\textbf{Hint/notes:} There are multiple ways to define this. However, the important question is how to ensure
+the ``left and right brackets are well-matched'' requirement described above.
+In Rust - we can model this using one of the recursive cases (in our Rust enums).
+You should have only one recursive case of your Rust enum to correspond to the left/right bracket loops,
+such as a \texttt{Loop} case.
+You will also need a way to combine BF programs in sequence (like \texttt{Sequence} from class.)
+
+\item
+Give a way of printing out BF programs by implementing the \texttt{Display} trait for your \texttt{BFProg} data type.
+Display in Rust is a way to tell Rust how to print out a datatype as a string/text to the terminal.\footnote{\url{https://doc.rust-lang.org/std/fmt/trait.Display.html}}
+\begin{verbatim}
+use std::fmt::Display;
+impl Display for BFProg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // ...
+    }
+}
+\end{verbatim}
+
+Your Display trait should print out the BF programs as a sequence of symbols, the way they are given above and in the Wikipedia examples. For example, they should print out like
+$$
+\texttt{[><+-[.]][+]}
+$$
+
+In your \texttt{main()} function, print out a couple of BF programs to see that they are displaying correctly.
+
+\item
+Write two unit tests for your syntax which attempt to construct a BF program for the two examples above:
+\begin{align*}
+&\texttt{[><+-[.]][+]} \\
+&\texttt{]><+[]}
+\end{align*}
+
+In your first unit test: assert that the first test program prints out correctly.
+\begin{verbatim}
+assert_eq!(prog.to_string(), "[><+-[.]][+]".to_string());
+\end{verbatim}
+
+In your second unit test: you should be unable to construct that exact BF program; you may construct a related program
+and assert that it does \emph{not} display as the string above.
+\begin{verbatim}
+assert!(prog.to_string() != "]><+[]".to_string());
+\end{verbatim}
+
+\item
+Define a reference interpreter for BF programs.
+This should be defined as a program \texttt{bf\_interpreter()}.
+Use a similar code structure to our interpreter for
+the \texttt{RandProg} programs that we did in class.
+\begin{verbatim}
+fn bf_interpreter(prog: &BFProg) {
+    // TODO
+    unimplemented!()
+}
+\end{verbatim}
+
+\item
+Write two unit tests which show that your reference interpreter is working correctly.
+The first should be an example BF program which adds two input numbers (like 5 + 6).
+The second one can be any example of your choosing.
+
+\begin{verbatim}
+#[test]
+fn test_bf_interpreter_1() {
+    unimplemented!()
+}
+#[test]
+fn test_bf_interpreter_2() {
+    unimplemented!()
+}
+\end{verbatim}
+\end{enumerate}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%   PROBLEM 2   %%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \item
+This problem continues the previous problem.
+
+\begin{enumerate}
+\item
+In LaTeX, give a formal grammar for the syntax of BF. You may want to review the definition of a
+context-free grammar and examples.\footnote{The following may be helpful to see examples of syntax: \url{https://cs.uwaterloo.ca/~s4bendav/files/CS360S22Lec08.pdf} and \url{https://en.wikipedia.org/wiki/Context-free_grammar}}
+Your formal grammar should be based on, but not necessarily identical to, your Rust enum from problem 1.
+
+\item
+Prove that \texttt{]><+[]} is not a valid BF program given your formal grammar.
+(Note: this is importantly different from why this is not a valid BF program according to your Rust enum!
+In the Rust enum case, it should be impossible to construct this program; but in your syntax it should be because
+your grammar doesn't allow this string to be part of the grammar.
+
+\item
+Describe the semantics for BF programs
+by providing a \emph{mathematical} definition of the set of triples \texttt{(INPUT, prog, OUTPUT)} that are valid executions of BF programs.
+You will need to start by defining INPUT and OUTPUT.\footnote{\textbf{Hint:} sequence of bytes is a good choice.}
+First: do this by assuming you have a deterministic reference interpreter, that is a program that can be used on any INPUT to run the BF program, and produces some output.
+You should use this to define a mathematical definition of the semantics.
+
+Second part \textbf{(extra credit)}: Define this without assuming access to a reference interpreter of any kind,
+by directly defining the semantics.
+Here is a sketch: define a ``configuration'' of a BF program, define a starting configuration, and then define what it means for a configuration to step to another configuration.
+Then state when \texttt{(INPUT, prog, OUTPUT)} is valid by saying something like: there is a sequence of starting configurations $c_0, c_1, c_2, c_3, \ldots$, starting from INPUT on program \texttt{prog}, \ldots where you will need to relate each configuration with the previous one.
+
+\item
+Prove formally that the semantics of BF is deterministic.
+You should use your definition above and the definition of deterministic semantics given in class.
+\end{enumerate}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%   PROBLEM 3   %%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \item
+This problem continues the previous two problems.
+Something we have not talked about yet in class is parsers.
+For this problem, you will write a naive parser for BF programs.
+Your parser should be implemented as a function \texttt{parse\_bf}.
+It should take a Rust string reference (\texttt{\&str}) that represents a BF program,
+and return either \texttt{Some(prog)}, if the program is a valid BF program,
+or \texttt{None}, if parsing failed.
+
+Here is a starting skeleton. Please use the signature as follows
+(you can modify the body).
+\begin{verbatim}
+pub fn parse_bf(bf_str: &str) -> Option<BFProg> {
+    // define some additional state here \dots
+    // (what state would be useful to maintain during the parsing?)
+
+    // Iterate through the string. We can use .chars():
+    for char in bf_str.chars() {
+        // TODO
+        unimplemented!()
+    }
+}
+\end{verbatim}
+
+Write at least two unit tests that show your parser seems to be working.
+
+Answer the following in the LaTeX:
+is there any program for which displaying it, followed by parsing the resulting display, does NOT result
+in the same program that you started with?
+Why or why not?
+
+If yes, demonstrate an example of such a program in a unit test.
+
+Your unit tests for this part should be called \texttt{test\_parser\_1}, \texttt{test\_parser\_2}, \texttt{test\_parser\_3}, etc.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%   PROBLEM 4   %%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \item
+This problem will explore deterministic versus nondeterministic program semantics.
+
+Assume we have two programming languages, \texttt{Lang1} and \texttt{Lang2}.
+Assume that the \texttt{INPUT} and the \texttt{OUTPUT} in both languages is a sequence of integers.
+Let \texttt{Semantics1} and \texttt{Semantics2} be sets of \texttt{(INPUT, prog, OUTPUT)} pairs, so that
+$$
+(\texttt{INPUT}, \texttt{prog}, \texttt{OUTPUT}) \in \texttt{Semantics1}
+$$
+if and only if the semantics oracle for \texttt{Lang1} accepts the program, and similarly for \texttt{Lang2}.
+
+We say that language 2 can \emph{simulate} language 1 if there is a function $f$ that takes any program
+$p_1$ in \texttt{Lang1} and produces a program $f(p_1)$ in \texttt{Lang2} such that,
+for all \texttt{INPUT} and \texttt{OUTPUT}:
+$$
+(\texttt{INPUT}, p_1, \texttt{OUTPUT}) \in \texttt{Semantics1}
+\text{ iff }
+(\texttt{INPUT}, f(p_1), \texttt{OUTPUT}) \in \texttt{Semantics2}.
+$$
+
+(\textbf{Note:} iff means ``if and only if''.)
+
+\begin{enumerate}[(a)]
+\item Prove that it is impossible for a deterministic programming language to simulate a nondeterministic one in
+this sense. That is, prove that if
+\texttt{Semantics2} is deterministic, and \texttt{Semantics1} is not, then \texttt{Semantics2} cannot simulate \texttt{Semantics1}.
+
+\item Prove, by giving a specific example, that the other way around is possible:
+that is, it is possible for a nondeterministic programming language to simulate a deterministic one.
+
+\item
+Prove that, despite part (a), it is possible for a deterministic programming language to simulate a nondeterministic
+one in the following different sense:
+if we are allowed to modify the input by adding additional integers to the \texttt{INPUT} sequence.
+The modified criteria for simulation is as follows:
+For all $\texttt{INPUT}_1$ and \texttt{OUTPUT},
+$$
+(\texttt{INPUT}_1, p_1, \texttt{OUTPUT}) \in \texttt{Semantics1}
+$$
+iff there exists $\texttt{INPUT}_2$ such that:
+$$
+(\texttt{INPUT}_2, f(p_1), \texttt{OUTPUT}) \in \texttt{Semantics2} \text{ and } \texttt{project}(\texttt{INPUT}_2) = \texttt{INPUT}_1
+$$
+
+where above, $\texttt{project}$ denotes an additional function defined by the simulation which takes
+$\texttt{INPUT}_2$ and gives back $\texttt{INPUT}_1$.
+The intuition should be as follows:
+$\texttt{INPUT}_2$ contains some additional input to the deterministic language, beyond what was present in the nondeterministic one.
+\end{enumerate}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%   PROBLEM 5   %%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \item
+This last problem will explore how deep mathematical statements can be embedded in program semantics.
+
+The \emph{Goldbach Conjecture} is an open mathematics problem.
+It states that for any even integer greater than $2$, that integer can be expressed
+as the sum of two prime numbers.
+
+Write a program in BF (or find one online) that terminates if and only if the Goldbach conjecture is false.
+
+Run your program in your BF interpreter (and check that it seems to not terminate).
+Ctrl-C your program after a while and make sure not to include the code which runs this program
+in your final submitted code.
+
+Then answer the following questions:
+\begin{enumerate}[(a)]
+\item Do you think that this is anything special about the Goldbach conjecture? Or can all mathematical statements
+be expressed as whether a particular program terminates?
+
+\item Give your best answer to the following:
+why is this not a problem for program semantics?
+
+That is, why is it not an issue that program semantics can express arbitrarily complex mathematical statements, that may
+be very difficult or even impossible to resolve? \emph{(Note: we know there are some mathematical statements that cannot ever
+be proven one way or the other, although it is unknown if the Goldbach conjecture is one of such statements, it would seem to be plausible.)}
+Doesn't this make program semantics totally intractable as a subject?
+Yet, we can define program semantics for practical languages like C, Python, or Rust.
+Explain.
+\end{enumerate}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,14 +345,16 @@
 \noindent
 \textbf{Submission instructions:}
 \begin{itemize}
-\item Upload your solutions (as a PDF) and your code (in Python) in Gradescope.
-\item Your PDF should be a single file \texttt{hw1.pdf}. If you use this LaTeX template to create your solutions, please remove the problem statements
-and include only your solutions.
-\item Your code should be a file \texttt{hw1.py}, together with \texttt{helper.py} and any other necessary helper files.
-It should include your solutions for parts 1, 3, and 5.
+\item Upload your solutions (as a PDF) and your code (as a \texttt{.zip} file, including the entire repository directory including config files like \texttt{Cargo.toml}, as with HW0) in Gradescope.
+\item Your PDF should be a single file \texttt{hw1.pdf}. If you use this LaTeX template to create your solutions, please remove the problem statements and include only your solutions.
+\item Your code (functions and types as described above) should be contained in \texttt{main.rs}.
+(You may also add utility modules, like \texttt{mod util;} then \texttt{use util::...}, if you feel that you need them; but you should put all the main functions with the names as above in \texttt{main.rs}.) Please double check on Piazza before importing any external crates (in your \texttt{Cargo.toml}).
+
+\item The \texttt{main.rs} should contain your solutions for parts 1, 3, and 5.
+
 \item Please include all of the function names and signatures as listed in the document above, and do not modify any function signatures. You are welcome to add additional functions and tests -- but if you do so, please include all additional tests only at the bottom of the file.
-\item If your code is correct, \texttt{pytest hw1.py} should run successfully without any errors (marked in red);
-instead, you should be using the annotation \texttt{pytest.mark.xfail} to mark tests that are expected to fail. These will show up in yellow.
+
+\item Make sure that \texttt{cargo build}, \texttt{cargo clippy}, \texttt{cargo test}, and \texttt{cargo fmt} (or \texttt{cargo fmt --check}) pass without any errors.
 \end{itemize}
 
 \end{document}
