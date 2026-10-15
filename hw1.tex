@@ -40,7 +40,7 @@ This problem set contains 5 problems.
 Problems 1, 3, and 5 are coding problems,
 and problems 2 and 4 are pure theory problems.
 Problems 2, 3, and 5 build on Problem 1,
-while Problem 4 are standalone.
+while Problem 4 is standalone.
 Most problems have multiple parts.
 There is a template in \texttt{src/} which you can modify for the programming problems.
 Solutions to the theory problems should be written in LaTeX.
@@ -146,13 +146,26 @@ assert!(prog.to_string() != "]><+[]".to_string());
 
 \item
 Define a reference interpreter for BF programs.
-This should be defined as a program \texttt{bf\_interpreter()}.
-Use a similar code structure to our interpreter for
-the \texttt{RandProg} programs that we did in class.
+This should be defined as a \texttt{BFInterpreter} struct/object
+with a method \texttt{interpret()},
+where the fields of the struct store
+the relevant program state,
+similar to how we defined a method \texttt{interpret()} on \texttt{VariableStore}
+to interpret \texttt{RandProg} programs in class.
+The code structure should look like this:
 \begin{verbatim}
-fn bf_interpreter(prog: &BFProg) {
-    // TODO
-    unimplemented!()
+pub struct BFInterpreter {
+    // ... define fields
+}
+impl BFInterpreter {
+    fn new() -> Self {
+        // TODO
+        unimplemented!()
+    }
+    fn interpret(&mut self, prog: &BFProg) {
+        // TODO
+        unimplemented!()
+    }
 }
 \end{verbatim}
 
@@ -201,8 +214,8 @@ You should use this to define a mathematical definition of the semantics.
 
 Second part \textbf{(extra credit)}: Define this without assuming access to a reference interpreter of any kind,
 by directly defining the semantics.
-Here is a sketch: define a ``configuration'' of a BF program, define a starting configuration, and then define what it means for a configuration to step to another configuration.
-Then state when \texttt{(INPUT, prog, OUTPUT)} is valid by saying something like: there is a sequence of starting configurations $c_0, c_1, c_2, c_3, \ldots$, starting from INPUT on program \texttt{prog}, \ldots where you will need to relate each configuration with the previous one.
+Here is a sketch: define a ``configuration'' of a BF program (this should include input, output, and the working tape), define a starting configuration, and then define what it means for a configuration to step to another configuration.
+Then state when \texttt{(INPUT, prog, OUTPUT)} is valid by saying something like: there is a sequence of configurations $c_0, c_1, c_2, c_3, \ldots$, where $c_0$ is the starting configuration on input INPUT and program \texttt{prog}, \ldots where you will need to relate each configuration with the previous one.
 
 \item
 Prove formally that the semantics of BF is deterministic.
@@ -246,7 +259,7 @@ Why or why not?
 
 If yes, demonstrate an example of such a program in a unit test.
 
-Your unit tests for this part should be called \texttt{test\_parser\_1}, \texttt{test\_parser\_2}, \texttt{test\_parser\_3}, etc.
+Your unit tests for this problem should be called \texttt{test\_parser\_1}, \texttt{test\_parser\_2}, \texttt{test\_parser\_3}, etc.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%   PROBLEM 4   %%%%%
