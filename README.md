@@ -6,7 +6,9 @@ This homework is a problem set. Please see `hw1.pdf` for further instructions.
 
 You can work on the homework by editing `hw1.tex` directly. You can compile it with `make` or with any other LaTeX compiler you prefer.
 
-To submit the homework, you will upload your solutions as a PDF (`hw1.pdf`) and accompanying code (`hw1.py` plus any corresponding helper files) to Gradescope.
+To submit the homework, you will upload your solutions as a PDF (`hw1.pdf`) and the accompanying code (the whole repo, as a `.zip` -- including `src/` and all other files such as `Cargo.toml`, as you did with HW0) to Gradescope.
+
+If your `.zip` already contains the PDF inside it, you don't need to upload both separately.
 
 ## Grading notes
 
