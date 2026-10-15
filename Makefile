@@ -1,4 +1,4 @@
-.PHONY: view build show-input-files pre post aux spellcheck full clean copy
+.PHONY: view build show-input-files clean copy
 .DEFAULT_GOAL: view
 
 MAIN_TEX = hw1.tex
@@ -58,9 +58,6 @@ show-input-files:
 	@echo $(BIB_FILES)
 	@echo "=== images and figures ==="
 	@echo $(IMG_FILES)
-
-# Build final version for publishing
-full: clean spellcheck pre build post
 
 # Clean up
 # Separating out build/ simplifies cleanup considerably.
